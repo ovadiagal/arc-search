@@ -3,14 +3,8 @@
   "name": "Arc Search",
   "version": "5.0",
   "description": "Unified search for open tabs, bookmarks, and history",
-  "permissions": [
-    "tabs",
-    "history",
-    "bookmarks"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["tabs", "history", "bookmarks"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
@@ -19,7 +13,7 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"],
       "css": ["overlay.css"],
-      "run_at": "document_end",
+      "run_at": "document_start",
       "all_frames": false
     }
   ],
