@@ -116,22 +116,32 @@ async function performSearch(query) {
 
   displayResults(results, query);
 }
+
 function displayResults(results, query = "") {
-  allResults = results;
-  selectedIndex = 0;
-
   const resultsContainer = document.getElementById("arc-search-results");
+  query = query.trim();
+  const MIN_GOOGLE_CHARS = 15;
 
-  // If query is long enough, add Google search as the first option
-  const MIN_GOOGLE_CHARS = 12;
-  if (query.trim().length >= MIN_GOOGLE_CHARS) {
-    const googleResult = {
-      type: "google",
-      title: `Search Google for "${query}"`,
-      url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-    };
-    allResults = [googleResult, ...allResults];
+  // Always create a Google search option
+  const googleResult = {
+    type: "google",
+    title: `Search Google for "${query}"`,
+    url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+  };
+
+  // If query is longer than threshold, make Google first
+  if (query.length >= MIN_GOOGLE_CHARS) {
+    allResults = [googleResult, ...results];
+  } else {
+    allResults = [...results];
   }
+
+  // If no results, still include Google
+  if (allResults.length === 0) {
+    allResults = [googleResult];
+  }
+
+  selectedIndex = 0;
 
   if (allResults.length === 0) {
     resultsContainer.innerHTML = `
@@ -143,15 +153,17 @@ function displayResults(results, query = "") {
     return;
   }
 
+  // Group results
   const grouped = {
+    google: allResults.filter((r) => r.type === "google"),
     tab: allResults.filter((r) => r.type === "tab"),
     bookmark: allResults.filter((r) => r.type === "bookmark"),
     history: allResults.filter((r) => r.type === "history"),
-    google: allResults.filter((r) => r.type === "google"),
   };
 
   let html = "";
 
+  // Render each group if it exists
   if (grouped.google.length > 0) {
     html +=
       '<div class="arc-search-group"><div class="arc-search-group-title">Google Search</div>';
